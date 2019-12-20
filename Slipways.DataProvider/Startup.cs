@@ -1,14 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using com.b_velop.Slipways.Data;
+using com.b_velop.Slipways.Data.Contracts;
+using com.b_velop.Slipways.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Slipways.DataProvider.Infrastructure;
 
 namespace Slipways.DataProvider
 {
@@ -16,12 +17,38 @@ namespace Slipways.DataProvider
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(
+            IServiceCollection services)
         {
+            services.AddMemoryCache();
+            var secretProvider = new SecretProvider();
+
+            var server = Environment.GetEnvironmentVariable("SERVER");
+            var database = Environment.GetEnvironmentVariable("DATABASE");
+            var user = Environment.GetEnvironmentVariable("USER");
+            var port = Environment.GetEnvironmentVariable("PORT");
+            var pw = secretProvider.GetSecret("dev_slipway_db");
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = "cache";
                 options.InstanceName = "Slipways";
+            });
+            var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
+            services.AddScoped<ISecretProvider, SecretProvider>();
+            services.AddScoped<IExtraRepository, ExtraRepository>();
+            services.AddScoped<IManufacturerRepository, ManufacturerRepository> ();
+            services.AddScoped<IManufacturerServicesRepository, ManufacturerServicesRepository> ();
+            services.AddScoped<IPortRepository, PortRepository> ();
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper> ();
+            services.AddScoped<IServiceRepository, ServiceRepository> ();
+            services.AddScoped<ISlipwayExtraRepository, SlipwayExtraRepository> ();
+            services.AddScoped<ISlipwayRepository, SlipwayRepository> ();
+            services.AddScoped<IStationRepository, StationRepository> ();
+            services.AddScoped <IWaterRepository, WaterRepository> ();
+
+            services.AddDbContext<SlipwaysContext>(options =>
+            {
+                options.UseSqlServer(connectionString);
             });
         }
 
