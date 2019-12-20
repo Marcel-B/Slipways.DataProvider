@@ -7,7 +7,9 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Slipways.DataProvider/Slipways.DataProvider.csproj", "Slipways.DataProvider/"]
-RUN dotnet restore "Slipways.DataProvider/Slipways.DataProvider.csproj"
+COPY ["NuGet.config", "Slipways.DataProvider/"]
+
+RUN dotnet restore "Slipways.DataProvider/Slipways.DataProvider.csproj" --configfile ./Slipways.DataProvider/NuGet.config
 COPY . .
 WORKDIR "/src/Slipways.DataProvider"
 RUN dotnet build "Slipways.DataProvider.csproj" -c Release -o /app/build
