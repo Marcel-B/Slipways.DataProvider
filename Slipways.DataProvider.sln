@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5FE016A2-A54B-4F18-BF37-4B977B3C00CF}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Global
