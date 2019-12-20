@@ -20,7 +20,7 @@ namespace Slipways.DataProvider
         {
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "localhost";
+                options.Configuration = "cache";
                 options.InstanceName = "Slipways";
             });
         }
