@@ -60,28 +60,13 @@ namespace Slipways.DataProvider
             });
         }
 
-        public void Configure(
+        public async Task Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            IHostApplicationLifetime lifetime,
             IDistributedCache cache)
         {
-            InitializeDatabase(app, cache);
-            lifetime.ApplicationStarted.Register(async () =>
-            {
-                cache.SetString("test", "Hello from space");
-                var bf = new BinaryFormatter();
-                var slipway = new Slipway
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Test",
-                    City = "Krefeld"
-                };
-                using var ms = new MemoryStream();
-                bf.Serialize(ms, slipway);
-                var result = ms.ToArray();
-                await cache.SetAsync("slipway", result);
-            });
+            await InitializeDatabase(app, cache);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -92,26 +77,10 @@ namespace Slipways.DataProvider
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context =>
-                {
-                    lifetime.ApplicationStarted.Register(async () =>
-                    {
-                        var bytes = await cache.GetAsync("slipway");
-                        using (var memStream = new MemoryStream())
-                        {
-                            var binForm = new BinaryFormatter();
-                            memStream.Write(bytes, 0, bytes.Length);
-                            memStream.Seek(0, SeekOrigin.Begin);
-                            var obj = binForm.Deserialize(memStream) as Slipway;
-                            System.Console.WriteLine(obj.Name);
-                            var abc = JsonConvert.SerializeObject(obj);
-                            Console.WriteLine(abc);
-                            await context.Response.WriteAsync(abc);
-                        }
-                        //var value = cache.GetString("test");
-                    });
-                });
+                            await context.Response.WriteAsync("Hello"));
             });
         }
+
         private async Task InitializeDatabase(
             IApplicationBuilder app,
             IDistributedCache cache)
