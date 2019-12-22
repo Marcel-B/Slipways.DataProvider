@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
+using System.Threading.Tasks;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
 using com.b_velop.Slipways.Data.Models;
@@ -13,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Slipways.DataProvider.Infrastructure;
 using Slipways.DataProvider.Services;
 
@@ -20,8 +23,6 @@ namespace Slipways.DataProvider
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(
             IServiceCollection services)
         {
@@ -55,17 +56,17 @@ namespace Slipways.DataProvider
 
             services.AddDbContext<SlipwaysContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Slipways.DataProvider"));
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
             IHostApplicationLifetime lifetime,
             IDistributedCache cache)
         {
+            InitializeDatabase(app, cache);
             lifetime.ApplicationStarted.Register(async () =>
             {
                 cache.SetString("test", "Hello from space");
@@ -101,13 +102,32 @@ namespace Slipways.DataProvider
                             memStream.Write(bytes, 0, bytes.Length);
                             memStream.Seek(0, SeekOrigin.Begin);
                             var obj = binForm.Deserialize(memStream) as Slipway;
-                            var json = JsonSerializer.Serialize(obj);
-                            await context.Response.WriteAsync(json);
+                            System.Console.WriteLine(obj.Name);
+                            var abc = JsonConvert.SerializeObject(obj);
+                            Console.WriteLine(abc);
+                            await context.Response.WriteAsync(abc);
                         }
                         //var value = cache.GetString("test");
                     });
                 });
             });
+        }
+        private async Task InitializeDatabase(
+            IApplicationBuilder app,
+            IDistributedCache cache)
+        {
+            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<SlipwaysContext>();
+            context.Database.Migrate();
+            var initializer = new Initializer(context, cache);
+            await initializer.Init<Water>("./initWaters.json", "Waters");
+            await initializer.Init<Extra>("./initExtras.json", "Extras");
+            await initializer.Init<Manufacturer>("./initManufacturers.json", "Manufacturers");
+            await initializer.Init<Slipway>("./initSlipways.json", "Slipways");
+            await initializer.Init<Service>("./initServices.json", "Services");
+            await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", "SlipwayExtras");
+            await initializer.Init<ManufacturerService>("./initManufacturerServices.json", "ManufacturerServices");
+            context.SaveChanges();
         }
     }
 }
