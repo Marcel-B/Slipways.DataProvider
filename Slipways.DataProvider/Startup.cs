@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
@@ -15,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using Slipways.DataProvider.Infrastructure;
 using Slipways.DataProvider.Services;
 
@@ -60,7 +55,7 @@ namespace Slipways.DataProvider
             });
         }
 
-        public async Task Configure(
+        public async void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
             IDistributedCache cache)
