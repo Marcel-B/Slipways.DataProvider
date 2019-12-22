@@ -30,7 +30,7 @@ namespace Slipways.DataProvider.Services
         {
             _logger.LogInformation("CacheLoader service running");
 
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
+            _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(5),
                 TimeSpan.FromMinutes(1));
             return Task.CompletedTask;
         }
