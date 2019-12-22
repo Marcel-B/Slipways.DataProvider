@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using com.b_velop.Slipways.Data.Contracts;
+using com.b_velop.Slipways.Data.Helper;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Slipways.DataProvider.Infrastructure;
 
 namespace Slipways.DataProvider.Services
 {
@@ -33,29 +38,28 @@ namespace Slipways.DataProvider.Services
         private async void DoWork(
             object state)
         {
-            //try
-            //{
-            //    using var scope = _services.CreateScope();
-            //    _logger.LogInformation("Reload cache");
-            //    var cache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
-            //    var rep = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
+            try
+            {
+                using var scope = _services.CreateScope();
+                _logger.LogInformation("Reload cache");
+                var cache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                var rep = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
 
-            //    cache.Remove(Cache.Waters);
-            //    _ = await rep.Water.SelectAllAsync();
+                var waters = await rep.Water.SelectAllAsync();
+                var o = waters.ToByteArray();
+                await cache.RemoveAsync(Cache.Waters);
+                await cache.SetAsync(Cache.Waters, o);
 
-            //    cache.Remove(Cache.Manufacturer);
-            //    _ = await rep.Manufacturer.SelectAllAsync();
+                //_ = await rep.Manufacturer.SelectAllAsync();
 
-            //    cache.Remove(Cache.Stations);
-            //    _ = await rep.Station.SelectAllAsync();
+                //_ = await rep.Station.SelectAllAsync();
 
-            //    cache.Remove(Cache.Extras);
-            //    _ = await rep.Extra.SelectAllAsync();
-            //}
-            //catch (Exception e)
-            //{
-            //    _logger.LogError(6666, $"Error while updating cache", e);
-            //}
+                //_ = await rep.Extra.SelectAllAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, $"Error while updating cache", e);
+            }
         }
 
         public Task StopAsync(

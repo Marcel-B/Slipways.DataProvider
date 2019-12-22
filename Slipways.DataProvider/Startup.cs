@@ -35,11 +35,11 @@ namespace Slipways.DataProvider
             var user = Environment.GetEnvironmentVariable("USER");
             var port = Environment.GetEnvironmentVariable("PORT");
             var pw = secretProvider.GetSecret("dev_slipway_db");
-            //services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = "cache";
-            //    options.InstanceName = "Slipways";
-            //});
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "cache";
+                options.InstanceName = "Slipways";
+            });
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
             services.AddScoped<ISecretProvider, SecretProvider>();
             services.AddScoped<IExtraRepository, ExtraRepository>();
