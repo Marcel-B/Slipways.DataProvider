@@ -1,6 +1,10 @@
 using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
+using com.b_velop.Slipways.Data.Models;
 using com.b_velop.Slipways.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,15 +43,15 @@ namespace Slipways.DataProvider
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
             services.AddScoped<ISecretProvider, SecretProvider>();
             services.AddScoped<IExtraRepository, ExtraRepository>();
-            services.AddScoped<IManufacturerRepository, ManufacturerRepository> ();
-            services.AddScoped<IManufacturerServicesRepository, ManufacturerServicesRepository> ();
-            services.AddScoped<IPortRepository, PortRepository> ();
-            services.AddScoped<IRepositoryWrapper, RepositoryWrapper> ();
-            services.AddScoped<IServiceRepository, ServiceRepository> ();
-            services.AddScoped<ISlipwayExtraRepository, SlipwayExtraRepository> ();
-            services.AddScoped<ISlipwayRepository, SlipwayRepository> ();
-            services.AddScoped<IStationRepository, StationRepository> ();
-            services.AddScoped <IWaterRepository, WaterRepository> ();
+            services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
+            services.AddScoped<IManufacturerServicesRepository, ManufacturerServicesRepository>();
+            services.AddScoped<IPortRepository, PortRepository>();
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<IServiceRepository, ServiceRepository>();
+            services.AddScoped<ISlipwayExtraRepository, SlipwayExtraRepository>();
+            services.AddScoped<ISlipwayRepository, SlipwayRepository>();
+            services.AddScoped<IStationRepository, StationRepository>();
+            services.AddScoped<IWaterRepository, WaterRepository>();
 
             services.AddDbContext<SlipwaysContext>(options =>
             {
@@ -59,15 +63,24 @@ namespace Slipways.DataProvider
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            IHostApplicationLifetime lifetime
-            //,
-            //IDistributedCache cache
-            )
+            IHostApplicationLifetime lifetime,
+            IDistributedCache cache)
         {
-            //lifetime.ApplicationStarted.Register(() =>
-            //{
-            //    cache.SetString("test", "Hello from space");
-            //});
+            lifetime.ApplicationStarted.Register(async () =>
+            {
+                cache.SetString("test", "Hello from space");
+                var bf = new BinaryFormatter();
+                var slipway = new Slipway
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Test",
+                    City = "Krefeld"
+                };
+                using var ms = new MemoryStream();
+                bf.Serialize(ms, slipway);
+                var result = ms.ToArray();
+                await cache.SetAsync("slipway", result);
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -79,11 +92,20 @@ namespace Slipways.DataProvider
             {
                 endpoints.MapGet("/", async context =>
                 {
-                    //lifetime.ApplicationStarted.Register(async () =>
-                    //{
-                    //    var value = cache.GetString("test");
-                    //    await context.Response.WriteAsync(value);
-                    //});
+                    lifetime.ApplicationStarted.Register(async () =>
+                    {
+                        var bytes = await cache.GetAsync("slipway");
+                        using (var memStream = new MemoryStream())
+                        {
+                            var binForm = new BinaryFormatter();
+                            memStream.Write(bytes, 0, bytes.Length);
+                            memStream.Seek(0, SeekOrigin.Begin);
+                            var obj = binForm.Deserialize(memStream) as Slipway;
+                            var json = JsonSerializer.Serialize(obj);
+                            await context.Response.WriteAsync(json);
+                        }
+                        //var value = cache.GetString("test");
+                    });
                 });
             });
         }

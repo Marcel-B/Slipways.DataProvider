@@ -28,10 +28,45 @@ namespace Slipways.DataProvider.Services
             CancellationToken stoppingToken)
         {
             _logger.LogInformation("CacheLoader service running");
-
             _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(5),
                 TimeSpan.FromHours(2));
             return Task.CompletedTask;
+        }
+
+        private async Task BackUpSlipways(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.Slipway.SelectAllAsync();
+                var file = new FileInfo("./backUp/slipways.json");
+                using var sw = file.CreateText();
+                using var str = sw.BaseStream;
+                await JsonSerializer.SerializeAsync(str, slipways, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true });
+                sw.Close();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error occurred while back up slipways", e);
+            }
+        }
+
+        private async Task BackUpServices(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.Service.SelectAllAsync();
+                var file = new FileInfo("./backUp/services.json");
+                using var sw = file.CreateText();
+                using var str = sw.BaseStream;
+                await JsonSerializer.SerializeAsync(str, slipways, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true });
+                sw.Close();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error occurred while back up services", e);
+            }
         }
 
         private async void DoWork(
@@ -47,14 +82,10 @@ namespace Slipways.DataProvider.Services
 
                 _logger.LogInformation("Start BackUp Database");
                 var wrapper = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
-                var slipways = await wrapper.Slipway.SelectAllAsync();
-                var file = new FileInfo("./backUp/slipways.json");
-                using var sw = file.CreateText();
-                using var str = sw.BaseStream;
-                await JsonSerializer.SerializeAsync(str, slipways, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true});
-                sw.Close();
+                await BackUpSlipways(wrapper);
+                await BackUpServices(wrapper);
             }
-            catch(ArgumentNullException e)
+            catch (ArgumentNullException e)
             {
                 _logger.LogError(6666, $"Error while backup database", e);
             }
