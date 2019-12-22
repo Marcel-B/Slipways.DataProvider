@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Slipways.DataProvider.Infrastructure;
 using Slipways.DataProvider.Services;
+using StackExchange.Redis;
 
 namespace Slipways.DataProvider
 {
@@ -36,7 +37,9 @@ namespace Slipways.DataProvider
             {
                 options.Configuration = "cache";
                 options.InstanceName = "Slipways";
-                options.ConfigurationOptions.ResolveDns = true;
+                var co = new ConfigurationOptions();
+                co.ResolveDns = true;
+                options.ConfigurationOptions = co;
             });
 
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
