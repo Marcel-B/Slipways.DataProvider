@@ -29,8 +29,8 @@ namespace Slipways.DataProvider.Services
         {
             _logger.LogInformation("CacheLoader service running");
 
-            _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(2),
-                TimeSpan.FromMinutes(1));
+            _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(5),
+                TimeSpan.FromHours(2));
             return Task.CompletedTask;
         }
 
@@ -49,11 +49,18 @@ namespace Slipways.DataProvider.Services
                 var wrapper = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
                 var slipways = await wrapper.Slipway.SelectAllAsync();
                 var file = new FileInfo("./backUp/slipways.json");
-                await JsonSerializer.SerializeAsync(file.CreateText().BaseStream, slipways);
+                using var sw = file.CreateText();
+                using var str = sw.BaseStream;
+                await JsonSerializer.SerializeAsync(str, slipways, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true});
+                sw.Close();
+            }
+            catch(ArgumentNullException e)
+            {
+                _logger.LogError(6666, $"Error while backup database", e);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, $"Error while updating cache", e);
+                _logger.LogError(6666, $"Error while backup database", e);
             }
         }
 
