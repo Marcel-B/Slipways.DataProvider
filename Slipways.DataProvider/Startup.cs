@@ -37,9 +37,6 @@ namespace Slipways.DataProvider
             {
                 options.Configuration = "cache";
                 options.InstanceName = "Slipways";
-                var co = new ConfigurationOptions();
-                co.ResolveDns = true;
-                options.ConfigurationOptions = co;
             });
 
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
