@@ -12,7 +12,12 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SERVER": "localhost",
+        "dev_slipway_db": "foo123bar!",
+        "DATABASE": "Slipways",
+        "PORT": "1433",
+        "USER": "sa"
       },
       "applicationUrl": "http://localhost:5000"
     },

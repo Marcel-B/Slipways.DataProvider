@@ -25,7 +25,8 @@ namespace Slipways.DataProvider.Infrastructure
                     return streamReader.ReadToEnd();
                 }
             }
-            return string.Empty;
+            return System.Environment.GetEnvironmentVariable(key);
+            //return string.Empty;
         }
     }
 }
