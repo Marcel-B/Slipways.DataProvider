@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
+using com.b_velop.Slipways.Data.Helper;
 using com.b_velop.Slipways.Data.Models;
 using com.b_velop.Slipways.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -87,13 +88,13 @@ namespace Slipways.DataProvider
             var context = serviceScope.ServiceProvider.GetRequiredService<SlipwaysContext>();
             context.Database.Migrate();
             var initializer = new Initializer(context, cache);
-            await initializer.Init<Water>("./initWaters.json", "Waters");
-            await initializer.Init<Extra>("./initExtras.json", "Extras");
-            await initializer.Init<Manufacturer>("./initManufacturers.json", "Manufacturers");
-            await initializer.Init<Slipway>("./initSlipways.json", "Slipways");
-            await initializer.Init<Service>("./initServices.json", "Services");
-            await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", "SlipwayExtras");
-            await initializer.Init<ManufacturerService>("./initManufacturerServices.json", "ManufacturerServices");
+            await initializer.Init<Water>("./initWaters.json", Cache.Waters);
+            await initializer.Init<Extra>("./initExtras.json", Cache.Extras);
+            await initializer.Init<Manufacturer>("./initManufacturers.json", Cache.Manufacturers);
+            await initializer.Init<Slipway>("./initSlipways.json", Cache.Slipways);
+            await initializer.Init<Service>("./initServices.json", Cache.Services);
+            await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", Cache.SlipwayExtras);
+            await initializer.Init<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
             context.SaveChanges();
         }
     }

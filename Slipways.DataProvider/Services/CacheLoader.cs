@@ -50,12 +50,6 @@ namespace Slipways.DataProvider.Services
                 var o = waters.ToByteArray();
                 await cache.RemoveAsync(Cache.Waters);
                 await cache.SetAsync(Cache.Waters, o);
-
-                //_ = await rep.Manufacturer.SelectAllAsync();
-
-                //_ = await rep.Station.SelectAllAsync();
-
-                //_ = await rep.Extra.SelectAllAsync();
             }
             catch (Exception e)
             {
