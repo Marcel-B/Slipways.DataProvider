@@ -94,6 +94,9 @@ namespace Slipways.DataProvider
             await initializer.Init<Slipway>("./initSlipways.json", Cache.Slipways);
             await initializer.Init<Service>("./initServices.json", Cache.Services);
             await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", Cache.SlipwayExtras);
+            await initializer.Init<Station>("./initStations.json", Cache.Stations);
+
+            // TODO - Stations
             await initializer.Init<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
             context.SaveChanges();
         }
