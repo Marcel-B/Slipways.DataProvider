@@ -59,6 +59,8 @@ namespace Slipways.DataProvider
             {
                 options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Slipways.DataProvider"));
             });
+
+            services.AddControllers();
         }
 
         public async void Configure(
