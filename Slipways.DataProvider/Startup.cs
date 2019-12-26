@@ -79,8 +79,7 @@ namespace Slipways.DataProvider
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                            await context.Response.WriteAsync("Hello"));
+                endpoints.MapControllers();
             });
         }
 
