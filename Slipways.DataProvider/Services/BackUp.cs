@@ -27,7 +27,7 @@ namespace Slipways.DataProvider.Services
         public Task StartAsync(
             CancellationToken stoppingToken)
         {
-            _logger.LogInformation("CacheLoader service running");
+            _logger.LogInformation("BackUp service running");
             _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(5),
                 TimeSpan.FromHours(2));
             return Task.CompletedTask;
@@ -98,7 +98,7 @@ namespace Slipways.DataProvider.Services
         public Task StopAsync(
             CancellationToken stoppingToken)
         {
-            _logger.LogInformation("CacheLoader Service is stopping.");
+            _logger.LogInformation("BackUp Service is stopping.");
             _timer?.Change(Timeout.Infinite, 0);
             return Task.CompletedTask;
         }

@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
 using Slipways.DataProvider.Infrastructure;
 using Slipways.DataProvider.Services;
 using StackExchange.Redis;
@@ -74,12 +75,13 @@ namespace Slipways.DataProvider
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseHttpMetrics();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics();
             });
         }
 
