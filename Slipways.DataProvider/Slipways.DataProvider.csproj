@@ -27,5 +27,6 @@
     <Folder Include="Infrastructure\" />
     <Folder Include="Services\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 </Project>

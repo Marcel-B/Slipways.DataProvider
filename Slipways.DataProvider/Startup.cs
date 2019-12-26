@@ -59,6 +59,8 @@ namespace Slipways.DataProvider
             {
                 options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Slipways.DataProvider"));
             });
+
+            services.AddControllers();
         }
 
         public async void Configure(
@@ -77,8 +79,7 @@ namespace Slipways.DataProvider
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                            await context.Response.WriteAsync("Hello"));
+                endpoints.MapControllers();
             });
         }
 
