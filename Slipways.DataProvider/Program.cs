@@ -13,7 +13,7 @@ namespace Slipways.DataProvider
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             string file;
-            if(env == "Production")
+            if (env == "Production")
                 file = "nlog.config";
             else
                 file = "dev-nlog.config";
@@ -38,14 +38,15 @@ namespace Slipways.DataProvider
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
             .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-                logging.SetMinimumLevel(LogLevel.Trace);
-            })
-                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                })
+            .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).UseNLog();
+                })
+            .UseNLog();
     }
 }
