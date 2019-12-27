@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using com.b_velop.Slipways.Data;
 
-namespace Slipways.DataProvider.Migrations
+namespace com.b_velop.Slipways.DataProvider.Migrations
 {
     [DbContext(typeof(SlipwaysContext))]
     partial class SlipwaysContextModelSnapshot : ModelSnapshot

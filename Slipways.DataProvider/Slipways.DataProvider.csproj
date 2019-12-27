@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <RootNamespace>com.b_velop.Slipways.DataProvider</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -27,7 +28,7 @@
   <ItemGroup>
     <Folder Include="Infrastructure\" />
     <Folder Include="Services\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Contracts\" />
   </ItemGroup>
 </Project>

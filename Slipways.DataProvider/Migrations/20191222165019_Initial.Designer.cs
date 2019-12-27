@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using com.b_velop.Slipways.Data;
 
-namespace Slipways.DataProvider.Migrations
+namespace com.b_velop.Slipways.DataProvider.Migrations
 {
     [DbContext(typeof(SlipwaysContext))]
     [Migration("20191222165019_Initial")]

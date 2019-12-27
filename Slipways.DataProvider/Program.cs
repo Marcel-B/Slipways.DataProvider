@@ -5,11 +5,12 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using Prometheus;
 
-namespace Slipways.DataProvider
+namespace com.b_velop.Slipways.DataProvider
 {
     public class Program
     {
-        public static MetricPusher PushGateway;
+        public static MetricPusher PushGateway { get; private set; }
+
         public static void Main(string[] args)
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -22,13 +23,16 @@ namespace Slipways.DataProvider
             });
 
             PushGateway.Start();
+
             string file;
             if (env == "Production")
                 file = "nlog.config";
             else
                 file = "dev-nlog.config";
 
-            var logger = NLogBuilder.ConfigureNLog(file).GetCurrentClassLogger();
+            var logFactory = NLogBuilder.ConfigureNLog(file);
+            var logger = logFactory.GetCurrentClassLogger();
+
             try
             {
                 logger.Debug("init main");
@@ -45,7 +49,8 @@ namespace Slipways.DataProvider
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(
+            string[] args) =>
             Host.CreateDefaultBuilder(args)
             .ConfigureLogging(logging =>
                 {

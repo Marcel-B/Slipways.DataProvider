@@ -5,19 +5,18 @@ using com.b_velop.Slipways.Data.Contracts;
 using com.b_velop.Slipways.Data.Helper;
 using com.b_velop.Slipways.Data.Models;
 using com.b_velop.Slipways.Data.Repositories;
+using com.b_velop.Slipways.DataProvider.Contracts;
+using com.b_velop.Slipways.DataProvider.Infrastructure;
+using com.b_velop.Slipways.DataProvider.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Prometheus;
-using Slipways.DataProvider.Infrastructure;
-using Slipways.DataProvider.Services;
-using StackExchange.Redis;
 
-namespace Slipways.DataProvider
+namespace com.b_velop.Slipways.DataProvider
 {
     public class Startup
     {
@@ -54,6 +53,7 @@ namespace Slipways.DataProvider
             services.AddScoped<ISlipwayRepository, SlipwayRepository>();
             services.AddScoped<IStationRepository, StationRepository>();
             services.AddScoped<IWaterRepository, WaterRepository>();
+            services.AddScoped<IInitializer, Initializer>();
 
             services.AddDbContext<SlipwaysContext>(options =>
             {
@@ -64,12 +64,10 @@ namespace Slipways.DataProvider
         }
 
         public async void Configure(
+            ILogger<Startup> logger,
             IApplicationBuilder app,
-            IWebHostEnvironment env,
-            IDistributedCache cache)
+            IWebHostEnvironment env)
         {
-            await InitializeDatabase(app, cache);
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -81,16 +79,21 @@ namespace Slipways.DataProvider
                 endpoints.MapControllers();
                 endpoints.MapMetrics();
             });
+
+            await InitializeDatabase(logger, app);
         }
 
         private async Task InitializeDatabase(
-            IApplicationBuilder app,
-            IDistributedCache cache)
+            ILogger<Startup> logger,
+            IApplicationBuilder app)
         {
+            logger.LogInformation($"Start initializing Cache");
             using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
             var context = serviceScope.ServiceProvider.GetRequiredService<SlipwaysContext>();
+            var initializer = serviceScope.ServiceProvider.GetRequiredService<IInitializer>();
+
             context.Database.Migrate();
-            var initializer = new Initializer(context, cache);
+            
             await initializer.Init<Water>("./initWaters.json", Cache.Waters);
             await initializer.Init<Extra>("./initExtras.json", Cache.Extras);
             await initializer.Init<Manufacturer>("./initManufacturers.json", Cache.Manufacturers);
@@ -102,6 +105,7 @@ namespace Slipways.DataProvider
             // TODO - Stations
             await initializer.Init<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
             context.SaveChanges();
+            logger.LogInformation($"Initializing Cache ready");
         }
     }
 }
