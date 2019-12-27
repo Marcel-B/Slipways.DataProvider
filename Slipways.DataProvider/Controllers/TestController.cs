@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Slipways.DataProvider.Controllers
+namespace com.b_velop.Slipways.DataProvider.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

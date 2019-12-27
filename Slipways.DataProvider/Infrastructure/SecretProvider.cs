@@ -1,12 +1,9 @@
 ﻿using System.IO;
+using com.b_velop.Slipways.DataProvider.Contracts;
 using Microsoft.Extensions.FileProviders;
 
-namespace Slipways.DataProvider.Infrastructure
+namespace com.b_velop.Slipways.DataProvider.Infrastructure
 {
-    public interface ISecretProvider
-    {
-        string GetSecret(string key);
-    }
     public class SecretProvider : ISecretProvider
     {
 
@@ -26,7 +23,6 @@ namespace Slipways.DataProvider.Infrastructure
                 }
             }
             return System.Environment.GetEnvironmentVariable(key);
-            //return string.Empty;
         }
     }
 }

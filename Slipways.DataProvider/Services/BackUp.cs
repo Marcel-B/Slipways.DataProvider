@@ -8,7 +8,7 @@ using com.b_velop.Slipways.Data.Contracts;
 using System.IO;
 using System.Text.Json;
 
-namespace Slipways.DataProvider.Services
+namespace com.b_velop.Slipways.DataProvider.Services
 {
     public class BackUp : IHostedService
     {
@@ -47,7 +47,7 @@ namespace Slipways.DataProvider.Services
             }
             catch (Exception e)
             {
-                _logger.LogError("Error occurred while back up slipways", e);
+                _logger.LogError(6666, "Error occurred while back up slipways", e);
             }
         }
 
@@ -65,7 +65,7 @@ namespace Slipways.DataProvider.Services
             }
             catch (Exception e)
             {
-                _logger.LogError("Error occurred while back up services", e);
+                _logger.LogError(6666, "Error occurred while back up services", e);
             }
         }
 
@@ -87,7 +87,7 @@ namespace Slipways.DataProvider.Services
             }
             catch (ArgumentNullException e)
             {
-                _logger.LogError(6666, $"Error while backup database", e);
+                _logger.LogError(2222, $"Error while backup database", e);
             }
             catch (Exception e)
             {

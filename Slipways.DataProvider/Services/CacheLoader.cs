@@ -2,14 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using com.b_velop.Slipways.Data.Contracts;
+using com.b_velop.Slipways.Data.Extensions;
 using com.b_velop.Slipways.Data.Helper;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Slipways.DataProvider.Infrastructure;
 
-namespace Slipways.DataProvider.Services
+namespace com.b_velop.Slipways.DataProvider.Services
 {
     public class CacheLoader : IHostedService
     {

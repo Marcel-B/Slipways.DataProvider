@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Slipways.DataProvider.Migrations
+namespace com.b_velop.Slipways.DataProvider.Migrations
 {
     public partial class Initial : Migration
     {
