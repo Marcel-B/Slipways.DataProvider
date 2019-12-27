@@ -8,19 +8,6 @@
     }
   },
   "profiles": {
-    "Slipways.DataProvider": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "PORT": "1433",
-        "dev_slipway_db": "foo123bar!",
-        "SERVER": "localhost",
-        "DATABASE": "Slipways",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "USER": "sa"
-      },
-      "applicationUrl": "http://localhost:5000"
-    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
@@ -33,6 +20,14 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true
+    },
+    "com.b_velop.Slipways.DataProvider": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }

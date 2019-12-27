@@ -1,6 +1,7 @@
 using System;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
+using com.b_velop.Slipways.Data.Extensions;
 using com.b_velop.Slipways.Data.Repositories;
 using com.b_velop.Slipways.DataProvider.Contracts;
 using com.b_velop.Slipways.DataProvider.Infrastructure;
@@ -33,25 +34,13 @@ namespace com.b_velop.Slipways.DataProvider
 
             var pw = secretProvider.GetSecret(server);
 
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = cache;
-                options.InstanceName = "Slipways";
-            });
+
+            services.AddSlipwaysData(cache);
+          
 
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
 
             services.AddScoped<ISecretProvider, SecretProvider>();
-            services.AddScoped<IExtraRepository, ExtraRepository>();
-            services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
-            services.AddScoped<IManufacturerServicesRepository, ManufacturerServicesRepository>();
-            services.AddScoped<IPortRepository, PortRepository>();
-            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
-            services.AddScoped<IServiceRepository, ServiceRepository>();
-            services.AddScoped<ISlipwayExtraRepository, SlipwayExtraRepository>();
-            services.AddScoped<ISlipwayRepository, SlipwayRepository>();
-            services.AddScoped<IStationRepository, StationRepository>();
-            services.AddScoped<IWaterRepository, WaterRepository>();
             services.AddScoped<IInitializer, Initializer>();
 
             services.AddDbContext<SlipwaysContext>(options =>
