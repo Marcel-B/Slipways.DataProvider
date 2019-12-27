@@ -30,7 +30,7 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
             _cache = cache;
         }
 
-        public async Task Init<T>(
+        public async Task InitDatabase<T>(
             string path,
             string name) where T : class, IEntity
         {
@@ -45,7 +45,7 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
                     targets.Add(obj);
             }
             await _context.Set<T>().AddRangeAsync(targets);
-            await InitCache<T>(name);
+            _context.SaveChanges();
         }
 
         public async Task InitCache<T>(
@@ -54,7 +54,10 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
             _logger.LogInformation($"Init cache for {name}");
             var all = await _context.Set<T>().ToListAsync();
             var asBytes = all.ToByteArray();
-            await _cache.SetAsync(name, asBytes);
+            await _cache.SetAsync(name, asBytes, new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromHours(5)
+            });
         }
     }
 }

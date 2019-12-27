@@ -1,9 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
-using com.b_velop.Slipways.Data.Helper;
-using com.b_velop.Slipways.Data.Models;
 using com.b_velop.Slipways.Data.Repositories;
 using com.b_velop.Slipways.DataProvider.Contracts;
 using com.b_velop.Slipways.DataProvider.Infrastructure;
@@ -24,6 +21,8 @@ namespace com.b_velop.Slipways.DataProvider
             IServiceCollection services)
         {
             services.AddHostedService<BackUp>();
+            services.AddHostedService<CacheLoader>();
+
             var secretProvider = new SecretProvider();
 
             var server = Environment.GetEnvironmentVariable("SERVER");
@@ -63,7 +62,7 @@ namespace com.b_velop.Slipways.DataProvider
             services.AddControllers();
         }
 
-        public async void Configure(
+        public void Configure(
             ILogger<Startup> logger,
             IApplicationBuilder app,
             IWebHostEnvironment env)
@@ -80,32 +79,32 @@ namespace com.b_velop.Slipways.DataProvider
                 endpoints.MapMetrics();
             });
 
-            await InitializeDatabase(logger, app);
+            InitializeDatabase(logger, app);
         }
 
-        private async Task InitializeDatabase(
+        private void InitializeDatabase(
             ILogger<Startup> logger,
             IApplicationBuilder app)
         {
-            logger.LogInformation($"Start initializing Cache");
+            logger.LogInformation($"Start Database Migrations");
             using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
             var context = serviceScope.ServiceProvider.GetRequiredService<SlipwaysContext>();
-            var initializer = serviceScope.ServiceProvider.GetRequiredService<IInitializer>();
+            //var initializer = serviceScope.ServiceProvider.GetRequiredService<IInitializer>();
 
             context.Database.Migrate();
-            
-            await initializer.Init<Water>("./initWaters.json", Cache.Waters);
-            await initializer.Init<Extra>("./initExtras.json", Cache.Extras);
-            await initializer.Init<Manufacturer>("./initManufacturers.json", Cache.Manufacturers);
-            await initializer.Init<Slipway>("./initSlipways.json", Cache.Slipways);
-            await initializer.Init<Service>("./initServices.json", Cache.Services);
-            await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", Cache.SlipwayExtras);
-            await initializer.Init<Station>("./initStations.json", Cache.Stations);
 
-            // TODO - Stations
-            await initializer.Init<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
+            //await initializer.Init<Water>("./initWaters.json", Cache.Waters);
+            //await initializer.Init<Extra>("./initExtras.json", Cache.Extras);
+            //await initializer.Init<Manufacturer>("./initManufacturers.json", Cache.Manufacturers);
+            //await initializer.Init<Slipway>("./initSlipways.json", Cache.Slipways);
+            //await initializer.Init<Service>("./initServices.json", Cache.Services);
+            //await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", Cache.SlipwayExtras);
+            //await initializer.Init<Station>("./initStations.json", Cache.Stations);
+
+            //// TODO - Stations
+            //await initializer.Init<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
             context.SaveChanges();
-            logger.LogInformation($"Initializing Cache ready");
+            logger.LogInformation($"Database Migrations done");
         }
     }
 }
