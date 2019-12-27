@@ -24,8 +24,6 @@ namespace Slipways.DataProvider
         public void ConfigureServices(
             IServiceCollection services)
         {
-            services.AddMemoryCache();
-
             services.AddHostedService<BackUp>();
             var secretProvider = new SecretProvider();
 
@@ -33,12 +31,13 @@ namespace Slipways.DataProvider
             var database = Environment.GetEnvironmentVariable("DATABASE");
             var user = Environment.GetEnvironmentVariable("USER");
             var port = Environment.GetEnvironmentVariable("PORT");
+            var cache = Environment.GetEnvironmentVariable("CACHE");
 
             var pw = secretProvider.GetSecret(server);
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "cache";
+                options.Configuration = cache;
                 options.InstanceName = "Slipways";
             });
 
@@ -77,7 +76,6 @@ namespace Slipways.DataProvider
             }
             app.UseHttpMetrics();
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

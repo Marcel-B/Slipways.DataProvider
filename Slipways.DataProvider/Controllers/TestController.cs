@@ -3,6 +3,7 @@
 namespace Slipways.DataProvider.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class TestController : Controller
     {
         // GET: api/values
