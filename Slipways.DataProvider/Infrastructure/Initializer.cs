@@ -9,6 +9,7 @@ using com.b_velop.Slipways.Data.Extensions;
 using com.b_velop.Slipways.DataProvider.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -16,15 +17,18 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
 {
     public class Initializer : IInitializer
     {
+        private IMemoryCache _memoryCache;
         private SlipwaysContext _context;
         private ILogger<Initializer> _logger;
         private IDistributedCache _cache;
 
         public Initializer(
             SlipwaysContext context,
+            IMemoryCache memoryCache,
             ILogger<Initializer> logger,
             IDistributedCache cache)
         {
+            _memoryCache = memoryCache;
             _context = context;
             _logger = logger;
             _cache = cache;
@@ -53,11 +57,12 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
         {
             _logger.LogInformation($"Init cache for {name}");
             var all = await _context.Set<T>().ToListAsync();
-            var asBytes = all.ToByteArray();
-            await _cache.SetAsync(name, asBytes, new DistributedCacheEntryOptions
-            {
-                SlidingExpiration = TimeSpan.FromHours(5)
-            });
+            _memoryCache.Set(name, all.ToHashSet());
+            //var asBytes = all.ToByteArray();
+            //await _cache.SetAsync(name, asBytes, new DistributedCacheEntryOptions
+            //{
+            //    SlidingExpiration = TimeSpan.FromHours(5)
+            //});
         }
     }
 }
