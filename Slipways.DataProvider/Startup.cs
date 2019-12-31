@@ -30,15 +30,11 @@ namespace com.b_velop.Slipways.DataProvider
             var database = Environment.GetEnvironmentVariable("DATABASE");
             var user = Environment.GetEnvironmentVariable("USER");
             var port = Environment.GetEnvironmentVariable("PORT");
-            var cache = Environment.GetEnvironmentVariable("CACHE");
 
             var pw = secretProvider.GetSecret(server);
 
-
-            services.AddSlipwaysData(cache);
-          
-
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
+            services.AddSlipwaysData();
 
             services.AddScoped<ISecretProvider, SecretProvider>();
             services.AddScoped<IInitializer, Initializer>();
@@ -78,20 +74,7 @@ namespace com.b_velop.Slipways.DataProvider
             logger.LogInformation($"Start Database Migrations");
             using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
             var context = serviceScope.ServiceProvider.GetRequiredService<SlipwaysContext>();
-            //var initializer = serviceScope.ServiceProvider.GetRequiredService<IInitializer>();
-
             context.Database.Migrate();
-
-            //await initializer.Init<Water>("./initWaters.json", Cache.Waters);
-            //await initializer.Init<Extra>("./initExtras.json", Cache.Extras);
-            //await initializer.Init<Manufacturer>("./initManufacturers.json", Cache.Manufacturers);
-            //await initializer.Init<Slipway>("./initSlipways.json", Cache.Slipways);
-            //await initializer.Init<Service>("./initServices.json", Cache.Services);
-            //await initializer.Init<SlipwayExtra>("./initSlipwayExtras.json", Cache.SlipwayExtras);
-            //await initializer.Init<Station>("./initStations.json", Cache.Stations);
-
-            //// TODO - Stations
-            //await initializer.Init<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
             context.SaveChanges();
             logger.LogInformation($"Database Migrations done");
         }
