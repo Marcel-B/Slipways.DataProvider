@@ -14,16 +14,6 @@ namespace com.b_velop.Slipways.DataProvider
         public static void Main(string[] args)
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var job = env == "Production" ? "SlipwaysDataProvider" : "DevSlipwaysDataProvider";
-            PushGateway = new MetricPusher(new MetricPusherOptions
-            {
-                Endpoint = "https://push.qaybe.de/metrics",
-                Job = job,
-                Instance = job
-            });
-
-            PushGateway.Start();
-
             string file;
             if (env == "Production")
                 file = "nlog.config";
