@@ -40,7 +40,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
             IEnumerable<T> objects,
             string type)
         {
-            var fileName = Path.Combine(BackUpPath, type, ".json");
+            var fileName = Path.Combine(BackUpPath, $"{type}.json");
             try
             {
                 var file = new FileInfo(fileName);
@@ -94,6 +94,20 @@ namespace com.b_velop.Slipways.DataProvider.Services
             catch (Exception e)
             {
                 _logger.LogError(6666, "Error occurred while fetch slipways from RepositoryWrapper", e);
+            }
+        }
+
+        private async Task BackUpStationsAsync(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.Station.SelectAllAsync();
+                await BackUpAsync(slipways, "stations");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, "Error occurred while fetch stations from RepositoryWrapper", e);
             }
         }
 
@@ -187,8 +201,9 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 await BackUpSlipwayExtrasAsync(wrapper);
                 await BackUpExtrasAsync(wrapper);
                 await BackUpManufacturerServicesAsync(wrapper);
+                await BackUpStationsAsync(wrapper);
             }
-            catch(InvalidOperationException e)
+            catch (InvalidOperationException e)
             {
                 _logger?.LogError(6662, $"Error while backup database", e);
             }
@@ -196,11 +211,11 @@ namespace com.b_velop.Slipways.DataProvider.Services
             {
                 _logger?.LogError(6663, $"Error while backup database", e);
             }
-            catch(ArgumentException e)
+            catch (ArgumentException e)
             {
                 _logger?.LogError(6664, $"Error while backup database", e);
             }
-            catch(IOException e)
+            catch (IOException e)
             {
                 _logger?.LogError(6665, $"Error while backup database", e);
             }
