@@ -20,18 +20,15 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
         private IMemoryCache _memoryCache;
         private SlipwaysContext _context;
         private ILogger<Initializer> _logger;
-        private IDistributedCache _cache;
 
         public Initializer(
             SlipwaysContext context,
             IMemoryCache memoryCache,
-            ILogger<Initializer> logger,
-            IDistributedCache cache)
+            ILogger<Initializer> logger)
         {
             _memoryCache = memoryCache;
             _context = context;
             _logger = logger;
-            _cache = cache;
         }
 
         public async Task InitDatabase<T>(
