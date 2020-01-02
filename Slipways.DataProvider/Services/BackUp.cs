@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using com.b_velop.Slipways.Data.Contracts;
 using System.IO;
 using System.Text.Json;
+using System.Collections.Generic;
+using System.Security;
 
 namespace com.b_velop.Slipways.DataProvider.Services
 {
@@ -15,6 +17,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
         private readonly IServiceProvider _services;
         private readonly ILogger<BackUp> _logger;
         private Timer _timer;
+        private const string BackUpPath = "./backUp/";
 
         public BackUp(
             IServiceProvider services,
@@ -33,39 +36,134 @@ namespace com.b_velop.Slipways.DataProvider.Services
             return Task.CompletedTask;
         }
 
-        private async Task BackUpSlipways(
+        private async Task BackUpAsync<T>(
+            IEnumerable<T> objects,
+            string type)
+        {
+            var fileName = Path.Combine(BackUpPath, type, ".json");
+            try
+            {
+                var file = new FileInfo(fileName);
+                using var sw = file.CreateText();
+                using var str = sw.BaseStream;
+                await JsonSerializer.SerializeAsync(str, objects, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true });
+                sw.Close();
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger?.LogError(6659, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+            catch (ArgumentException e)
+            {
+                _logger?.LogError(6660, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+            catch (PathTooLongException e)
+            {
+                _logger?.LogError(6661, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+            catch (NotSupportedException e)
+            {
+                _logger?.LogError(6662, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                _logger?.LogError(6663, $"Error occurred while back up '{type}' in file '{fileName}' - Unauthorized", e);
+            }
+            catch (IOException e)
+            {
+                _logger?.LogError(6664, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+            catch (SecurityException e)
+            {
+                _logger?.LogError(6665, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(6666, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+            }
+        }
+
+        private async Task BackUpSlipwaysAsync(
             IRepositoryWrapper wrapper)
         {
             try
             {
                 var slipways = await wrapper.Slipway.SelectAllAsync();
-                var file = new FileInfo("./backUp/slipways.json");
-                using var sw = file.CreateText();
-                using var str = sw.BaseStream;
-                await JsonSerializer.SerializeAsync(str, slipways, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true });
-                sw.Close();
+                await BackUpAsync(slipways, "slipways");
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while back up slipways", e);
+                _logger.LogError(6666, "Error occurred while fetch slipways from RepositoryWrapper", e);
             }
         }
 
-        private async Task BackUpServices(
+        private async Task BackUpServicesAsync(
             IRepositoryWrapper wrapper)
         {
             try
             {
                 var slipways = await wrapper.Service.SelectAllAsync();
-                var file = new FileInfo("./backUp/services.json");
-                using var sw = file.CreateText();
-                using var str = sw.BaseStream;
-                await JsonSerializer.SerializeAsync(str, slipways, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true });
-                sw.Close();
+                await BackUpAsync(slipways, "services");
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while back up services", e);
+                _logger.LogError(6666, "Error occurred while fetch services from RepositoryWrapper", e);
+            }
+        }
+
+        private async Task BackUpManufacturersAsync(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.Manufacturer.SelectAllAsync();
+                await BackUpAsync(slipways, "manufacturers");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, "Error occurred while fetch manufacturers from RepositoryWrapper", e);
+            }
+        }
+
+        private async Task BackUpExtrasAsync(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.Extra.SelectAllAsync();
+                await BackUpAsync(slipways, "extras");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, "Error occurred while fetch extras from RepositoryWrapper", e);
+            }
+        }
+
+        private async Task BackUpSlipwayExtrasAsync(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.SlipwayExtra.SelectAllAsync();
+                await BackUpAsync(slipways, "slipwayExtras");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, "Error occurred while fetch slipwayExtras from RepositoryWrapper", e);
+            }
+        }
+
+        private async Task BackUpManufacturerServicesAsync(
+            IRepositoryWrapper wrapper)
+        {
+            try
+            {
+                var slipways = await wrapper.ManufacturerServices.SelectAllAsync();
+                await BackUpAsync(slipways, "manufacturerServices");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, "Error occurred while fetch manufacturerServices from RepositoryWrapper", e);
             }
         }
 
@@ -82,23 +180,40 @@ namespace com.b_velop.Slipways.DataProvider.Services
 
                 _logger.LogInformation("Start BackUp Database");
                 var wrapper = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
-                await BackUpSlipways(wrapper);
-                await BackUpServices(wrapper);
+
+                await BackUpSlipwaysAsync(wrapper);
+                await BackUpServicesAsync(wrapper);
+                await BackUpManufacturersAsync(wrapper);
+                await BackUpSlipwayExtrasAsync(wrapper);
+                await BackUpExtrasAsync(wrapper);
+                await BackUpManufacturerServicesAsync(wrapper);
+            }
+            catch(InvalidOperationException e)
+            {
+                _logger?.LogError(6662, $"Error while backup database", e);
             }
             catch (ArgumentNullException e)
             {
-                _logger.LogError(2222, $"Error while backup database", e);
+                _logger?.LogError(6663, $"Error while backup database", e);
+            }
+            catch(ArgumentException e)
+            {
+                _logger?.LogError(6664, $"Error while backup database", e);
+            }
+            catch(IOException e)
+            {
+                _logger?.LogError(6665, $"Error while backup database", e);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, $"Error while backup database", e);
+                _logger?.LogError(6666, $"Error while backup database", e);
             }
         }
 
         public Task StopAsync(
             CancellationToken stoppingToken)
         {
-            _logger.LogInformation("BackUp Service is stopping.");
+            _logger?.LogInformation("BackUp Service is stopping.");
             _timer?.Change(Timeout.Infinite, 0);
             return Task.CompletedTask;
         }

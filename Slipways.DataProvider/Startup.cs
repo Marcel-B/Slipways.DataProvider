@@ -1,8 +1,6 @@
 using System;
 using com.b_velop.Slipways.Data;
-using com.b_velop.Slipways.Data.Contracts;
 using com.b_velop.Slipways.Data.Extensions;
-using com.b_velop.Slipways.Data.Repositories;
 using com.b_velop.Slipways.DataProvider.Contracts;
 using com.b_velop.Slipways.DataProvider.Infrastructure;
 using com.b_velop.Slipways.DataProvider.Services;

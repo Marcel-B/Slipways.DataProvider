@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using com.b_velop.Slipways.Data;
 using com.b_velop.Slipways.Data.Contracts;
-using com.b_velop.Slipways.Data.Extensions;
 using com.b_velop.Slipways.DataProvider.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -52,14 +50,9 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
         public async Task InitCache<T>(
             string name) where T : class, IEntity
         {
-            _logger.LogInformation($"Init cache for {name}");
+            _logger.LogInformation($"Init cache for '{name}'");
             var all = await _context.Set<T>().ToListAsync();
             _memoryCache.Set(name, all.ToHashSet());
-            //var asBytes = all.ToByteArray();
-            //await _cache.SetAsync(name, asBytes, new DistributedCacheEntryOptions
-            //{
-            //    SlidingExpiration = TimeSpan.FromHours(5)
-            //});
         }
     }
 }
