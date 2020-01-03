@@ -9,6 +9,7 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Security;
+using com.b_velop.Slipways.Data.Helper;
 
 namespace com.b_velop.Slipways.DataProvider.Services
 {
@@ -28,17 +29,17 @@ namespace com.b_velop.Slipways.DataProvider.Services
         }
 
         public Task StartAsync(
-            CancellationToken stoppingToken)
+            CancellationToken cancellationToken)
         {
             _logger.LogInformation("BackUp service running");
-            _timer = new Timer(DoWork, null, TimeSpan.FromMinutes(5),
-                TimeSpan.FromHours(2));
+            _timer = new Timer(DoWork, cancellationToken, TimeSpan.FromMinutes(5), TimeSpan.FromHours(2));
             return Task.CompletedTask;
         }
 
         private async Task BackUpAsync<T>(
             IEnumerable<T> objects,
-            string type)
+            string type,
+            CancellationToken cancellationToken = default)
         {
             var fileName = Path.Combine(BackUpPath, $"{type}.json");
             try
@@ -46,7 +47,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 var file = new FileInfo(fileName);
                 using var sw = file.CreateText();
                 using var str = sw.BaseStream;
-                await JsonSerializer.SerializeAsync(str, objects, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true });
+                await JsonSerializer.SerializeAsync(str, objects, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true }, cancellationToken);
                 sw.Close();
             }
             catch (ArgumentNullException e)
@@ -79,105 +80,112 @@ namespace com.b_velop.Slipways.DataProvider.Services
             }
             catch (Exception e)
             {
-                _logger?.LogError(6666, $"Error occurred while back up '{type}' in file '{fileName}'", e);
+                _logger?.LogError(6666, $"Unexpected error occurred while back up '{type}' in file '{fileName}'", e);
             }
         }
 
         private async Task BackUpSlipwaysAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.Slipway.SelectAllAsync();
-                await BackUpAsync(slipways, "slipways");
+                var slipways = await wrapper.Slipway.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.Slipways);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch slipways from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch slipways from RepositoryWrapper", e);
             }
         }
 
         private async Task BackUpStationsAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.Station.SelectAllAsync();
-                await BackUpAsync(slipways, "stations");
+                var slipways = await wrapper.Station.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.Stations);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch stations from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch stations from RepositoryWrapper", e);
             }
         }
 
         private async Task BackUpServicesAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.Service.SelectAllAsync();
-                await BackUpAsync(slipways, "services");
+                var slipways = await wrapper.Service.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.Services);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch services from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch services from RepositoryWrapper", e);
             }
         }
 
         private async Task BackUpManufacturersAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.Manufacturer.SelectAllAsync();
-                await BackUpAsync(slipways, "manufacturers");
+                var slipways = await wrapper.Manufacturer.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.Manufacturers);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch manufacturers from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch manufacturers from RepositoryWrapper", e);
             }
         }
 
         private async Task BackUpExtrasAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.Extra.SelectAllAsync();
-                await BackUpAsync(slipways, "extras");
+                var slipways = await wrapper.Extra.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.Extras);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch extras from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch extras from RepositoryWrapper", e);
             }
         }
 
         private async Task BackUpSlipwayExtrasAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.SlipwayExtra.SelectAllAsync();
-                await BackUpAsync(slipways, "slipwayExtras");
+                var slipways = await wrapper.SlipwayExtra.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.SlipwayExtras);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch slipwayExtras from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch slipwayExtras from RepositoryWrapper", e);
             }
         }
 
         private async Task BackUpManufacturerServicesAsync(
-            IRepositoryWrapper wrapper)
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                var slipways = await wrapper.ManufacturerServices.SelectAllAsync();
-                await BackUpAsync(slipways, "manufacturerServices");
+                var slipways = await wrapper.ManufacturerServices.SelectAllAsync(cancellationToken);
+                await BackUpAsync(slipways, Cache.ManufacturerServices);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, "Error occurred while fetch manufacturerServices from RepositoryWrapper", e);
+                _logger.LogError(6666, "Unexpected error occurred while fetch manufacturerServices from RepositoryWrapper", e);
             }
         }
 
@@ -186,6 +194,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
         {
             try
             {
+                var cancellationToken = (CancellationToken)state;
                 using var scope = _services.CreateScope();
                 var directory = new DirectoryInfo("backUp");
 
@@ -195,13 +204,13 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 _logger.LogInformation("Start BackUp Database");
                 var wrapper = scope.ServiceProvider.GetRequiredService<IRepositoryWrapper>();
 
-                await BackUpSlipwaysAsync(wrapper);
-                await BackUpServicesAsync(wrapper);
-                await BackUpManufacturersAsync(wrapper);
-                await BackUpSlipwayExtrasAsync(wrapper);
-                await BackUpExtrasAsync(wrapper);
-                await BackUpManufacturerServicesAsync(wrapper);
-                await BackUpStationsAsync(wrapper);
+                await BackUpSlipwaysAsync(wrapper, cancellationToken);
+                await BackUpServicesAsync(wrapper, cancellationToken);
+                await BackUpManufacturersAsync(wrapper, cancellationToken);
+                await BackUpSlipwayExtrasAsync(wrapper, cancellationToken);
+                await BackUpExtrasAsync(wrapper, cancellationToken);
+                await BackUpManufacturerServicesAsync(wrapper, cancellationToken);
+                await BackUpStationsAsync(wrapper, cancellationToken);
             }
             catch (InvalidOperationException e)
             {
@@ -221,12 +230,12 @@ namespace com.b_velop.Slipways.DataProvider.Services
             }
             catch (Exception e)
             {
-                _logger?.LogError(6666, $"Error while backup database", e);
+                _logger?.LogError(6666, $"Unexpected error while backup database", e);
             }
         }
 
         public Task StopAsync(
-            CancellationToken stoppingToken)
+            CancellationToken cancellationToken)
         {
             _logger?.LogInformation("BackUp Service is stopping.");
             _timer?.Change(Timeout.Infinite, 0);
