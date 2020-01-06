@@ -39,6 +39,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 _logger.LogInformation("Add Values to Database");
                 using var scope = _services.CreateScope();
                 var initializer = scope.ServiceProvider.GetRequiredService<IInitializer>();
+
                 await initializer.InitDatabase<Water>("./initWaters.json", Cache.Waters);
                 await initializer.InitDatabase<Extra>("./initExtras.json", Cache.Extras);
                 await initializer.InitDatabase<Manufacturer>("./initManufacturers.json", Cache.Manufacturers);
@@ -47,6 +48,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 await initializer.InitDatabase<SlipwayExtra>("./initSlipwayExtras.json", Cache.SlipwayExtras);
                 await initializer.InitDatabase<Station>("./initStations.json", Cache.Stations);
                 await initializer.InitDatabase<ManufacturerService>("./initManufacturerServices.json", Cache.ManufacturerServices);
+
                 _logger.LogInformation("Add Values to Database done");
             }
             catch (InvalidOperationException e)
