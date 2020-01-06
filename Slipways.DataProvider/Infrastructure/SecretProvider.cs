@@ -10,6 +10,9 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
         public string GetSecret(
               string key)
         {
+            if (string.IsNullOrWhiteSpace(key))
+                return "";
+
             const string DOCKER_SECRET_PATH = "/run/secrets/";
             if (Directory.Exists(DOCKER_SECRET_PATH))
             {

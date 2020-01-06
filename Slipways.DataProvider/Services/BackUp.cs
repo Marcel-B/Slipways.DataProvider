@@ -120,12 +120,27 @@ namespace com.b_velop.Slipways.DataProvider.Services
         {
             try
             {
-                var slipways = await wrapper.Service.SelectAllAsync(cancellationToken);
-                await BackUpAsync(slipways, Cache.Services);
+                var services = await wrapper.Service.SelectAllAsync(cancellationToken);
+                await BackUpAsync(services, Cache.Services);
             }
             catch (Exception e)
             {
                 _logger.LogError(6666, "Unexpected error occurred while fetch services from RepositoryWrapper", e);
+            }
+        }
+
+        private async Task BackUpPortsAsync(
+            IRepositoryWrapper wrapper,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var ports = await wrapper.Port.SelectAllAsync(cancellationToken);
+                await BackUpAsync(ports, Cache.Ports);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, "Unexpected error occurred while fetch ports from RepositoryWrapper", e);
             }
         }
 
