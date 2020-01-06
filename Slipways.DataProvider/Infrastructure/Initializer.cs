@@ -52,6 +52,7 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
         {
             _logger.LogInformation($"Init cache for '{name}'");
             var all = await _context.Set<T>().ToListAsync();
+            _logger.LogInformation($"Got '{all.Count}' values for '{name}'");
             _memoryCache.Set(name, all.ToHashSet());
         }
     }
