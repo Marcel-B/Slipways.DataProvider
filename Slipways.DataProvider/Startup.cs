@@ -31,7 +31,12 @@ namespace com.b_velop.Slipways.DataProvider
 
             var pw = secretProvider.GetSecret(server);
 
+#if DEBUG
+            var connectionString = $"Server=localhost,1433;Database=Slipways;User Id=sa;Password=foo123bar!";
+#else
             var connectionString = $"Server={server},{port};Database={database};User Id={user};Password={pw}";
+#endif
+            Console.WriteLine(connectionString);
             services.AddSlipwaysData();
 
             services.AddScoped<ISecretProvider, SecretProvider>();

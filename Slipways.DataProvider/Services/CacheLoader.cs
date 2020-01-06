@@ -28,7 +28,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
             CancellationToken stoppingToken)
         {
             _logger.LogInformation("CacheLoader service running");
-            await InitDatabaseAsync();
+            //await InitDatabaseAsync();
             _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(1));
         }
 
@@ -78,6 +78,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 await initializer.InitCache<Manufacturer>(Cache.Manufacturers);
                 await initializer.InitCache<ManufacturerService>(Cache.ManufacturerServices);
                 await initializer.InitCache<Service>(Cache.Services);
+                await initializer.InitCache<Port>(Cache.Ports);
 
                 _logger.LogInformation("Reload cache done");
             }
