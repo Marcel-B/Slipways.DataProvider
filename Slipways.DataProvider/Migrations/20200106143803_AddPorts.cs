@@ -10,7 +10,7 @@ namespace com.b_velop.Slipways.DataProvider.Migrations
             migrationBuilder.AddColumn<Guid>(
                 name: "PortFk",
                 table: "Slipways",
-                nullable: false,
+                nullable: true,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateIndex(
