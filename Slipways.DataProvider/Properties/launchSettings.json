@@ -2,14 +2,15 @@
   "profiles": {
     "com.b_velop.Slipways.DataProvider": {
       "commandName": "Project",
+      "launchBrowser": true,
       "environmentVariables": {
-        "USER": "sa",
         "SEND_GRID_USER": "millegalb",
+        "PORT": "1433",
         "SERVER": "localhost",
-        "DATABASE": "Slipways",
         "localhost": "foo123bar!",
+        "DATABASE": "Slipways",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PORT": "1433"
+        "USER": "sa"
       },
       "applicationUrl": "http://localhost:5000"
     }
