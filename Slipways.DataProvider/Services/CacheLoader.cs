@@ -53,11 +53,11 @@ namespace com.b_velop.Slipways.DataProvider.Services
             }
             catch (InvalidOperationException e)
             {
-                _logger.LogError(6665, $"Error while init database", e);
+                _logger.LogError(6665, $"Error occurred while init database", e);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, $"Unexpected error while init database", e);
+                _logger.LogError(6666, $"Unexpected error occurred while init database", e);
             }
         }
 
@@ -84,11 +84,11 @@ namespace com.b_velop.Slipways.DataProvider.Services
             }
             catch (InvalidOperationException e)
             {
-                _logger.LogError(6665, $"Error while updating cache", e);
+                _logger.LogError(6665, $"Error occurred while updating cache", e);
             }
             catch (Exception e)
             {
-                _logger.LogError(6666, $"Unexpected error while updating cache", e);
+                _logger.LogError(6666, $"Unexpected error occurred while updating cache", e);
             }
         }
 

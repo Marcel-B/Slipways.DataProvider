@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,10 +51,17 @@ namespace com.b_velop.Slipways.DataProvider.Infrastructure
         public async Task InitCache<T>(
             string name) where T : class, IEntity
         {
-            _logger.LogInformation($"Init cache for '{name}'");
-            var all = await _context.Set<T>().ToListAsync();
-            _logger.LogInformation($"Got '{all.Count}' values for '{name}'");
-            _memoryCache.Set(name, all.ToHashSet());
+            try
+            {
+                //_logger.LogInformation($"Init cache for '{name}'");
+                var all = await _context.Set<T>().ToListAsync();
+                //_logger.LogInformation($"Got '{all.Count}' values for '{name}'");
+                _memoryCache.Set(name, all.ToHashSet());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(6666, $"Unexpected exception while updating Cache for '{name}'", e);
+            }
         }
     }
 }

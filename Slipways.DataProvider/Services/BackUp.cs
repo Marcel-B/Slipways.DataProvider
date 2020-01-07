@@ -226,26 +226,27 @@ namespace com.b_velop.Slipways.DataProvider.Services
                 await BackUpExtrasAsync(wrapper, cancellationToken);
                 await BackUpManufacturerServicesAsync(wrapper, cancellationToken);
                 await BackUpStationsAsync(wrapper, cancellationToken);
+                await BackUpPortsAsync(wrapper, cancellationToken);
             }
             catch (InvalidOperationException e)
             {
-                _logger?.LogError(6662, $"Error while backup database", e);
+                _logger?.LogError(6662, $"Error occurred while backup database", e);
             }
             catch (ArgumentNullException e)
             {
-                _logger?.LogError(6663, $"Error while backup database", e);
+                _logger?.LogError(6663, $"Error occurred while backup database", e);
             }
             catch (ArgumentException e)
             {
-                _logger?.LogError(6664, $"Error while backup database", e);
+                _logger?.LogError(6664, $"Error occurred while backup database", e);
             }
             catch (IOException e)
             {
-                _logger?.LogError(6665, $"Error while backup database", e);
+                _logger?.LogError(6665, $"Error occurred while backup database", e);
             }
             catch (Exception e)
             {
-                _logger?.LogError(6666, $"Unexpected error while backup database", e);
+                _logger?.LogError(6666, $"Unexpected error occurred while backup database", e);
             }
         }
 
