@@ -22,10 +22,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="prometheus-net.AspNetCore" Version="3.4.0" />
-    <PackageReference Include="Slipways.Data" Version="2.1.53" />
+    <PackageReference Include="Slipways.Data" Version="2.1.60" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="backUp\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Services\" />
     <Folder Include="Controllers\" />
