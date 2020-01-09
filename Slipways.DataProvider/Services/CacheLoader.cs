@@ -14,7 +14,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
     {
         private readonly IServiceProvider _services;
         private readonly ILogger<CacheLoader> _logger;
-        private Timer _timer;
+        //private Timer _timer;
 
         public CacheLoader(
             IServiceProvider services,
@@ -29,7 +29,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
         {
             _logger.LogInformation("CacheLoader service running");
             await InitDatabaseAsync();
-            _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(1));
+            //_timer = new Timer(DoWork, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(1));
         }
 
         private async Task InitDatabaseAsync()
@@ -61,48 +61,48 @@ namespace com.b_velop.Slipways.DataProvider.Services
             }
         }
 
-        private async void DoWork(
-            object state)
-        {
-            try
-            {
-                using var scope = _services.CreateScope();
-                _logger.LogInformation("Reload cache");
-                var initializer = scope.ServiceProvider.GetRequiredService<IInitializer>();
+        //private async void DoWork(
+        //    object state)
+        //{
+        //    try
+        //    {
+        //        using var scope = _services.CreateScope();
+        //        _logger.LogInformation("Reload cache");
+        //        var initializer = scope.ServiceProvider.GetRequiredService<IInitializer>();
 
-                await initializer.InitCache<Water>(Cache.Waters);
-                await initializer.InitCache<SlipwayExtra>(Cache.SlipwayExtras);
-                await initializer.InitCache<Slipway>(Cache.Slipways);
-                await initializer.InitCache<Extra>(Cache.Extras);
-                await initializer.InitCache<Station>(Cache.Stations);
-                await initializer.InitCache<Manufacturer>(Cache.Manufacturers);
-                await initializer.InitCache<ManufacturerService>(Cache.ManufacturerServices);
-                await initializer.InitCache<Service>(Cache.Services);
-                await initializer.InitCache<Port>(Cache.Ports);
+        //        await initializer.InitCache<Water>(Cache.Waters);
+        //        await initializer.InitCache<SlipwayExtra>(Cache.SlipwayExtras);
+        //        await initializer.InitCache<Slipway>(Cache.Slipways);
+        //        await initializer.InitCache<Extra>(Cache.Extras);
+        //        await initializer.InitCache<Station>(Cache.Stations);
+        //        await initializer.InitCache<Manufacturer>(Cache.Manufacturers);
+        //        await initializer.InitCache<ManufacturerService>(Cache.ManufacturerServices);
+        //        await initializer.InitCache<Service>(Cache.Services);
+        //        await initializer.InitCache<Port>(Cache.Ports);
 
-                _logger.LogInformation("Reload cache done");
-            }
-            catch (InvalidOperationException e)
-            {
-                _logger.LogError(6665, $"Error occurred while updating cache", e);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(6666, $"Unexpected error occurred while updating cache", e);
-            }
-        }
+        //        _logger.LogInformation("Reload cache done");
+        //    }
+        //    catch (InvalidOperationException e)
+        //    {
+        //        _logger.LogError(6665, $"Error occurred while updating cache", e);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogError(6666, $"Unexpected error occurred while updating cache", e);
+        //    }
+        //}
 
         public Task StopAsync(
             CancellationToken stoppingToken)
         {
             _logger.LogInformation("CacheLoader Service is stopping.");
-            _timer?.Change(Timeout.Infinite, 0);
+            //_timer?.Change(Timeout.Infinite, 0);
             return Task.CompletedTask;
         }
 
         public void Dispose()
         {
-            _timer?.Dispose();
+            //_timer?.Dispose();
         }
     }
 }

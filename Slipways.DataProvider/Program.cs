@@ -3,18 +3,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
-using Prometheus;
 
 namespace com.b_velop.Slipways.DataProvider
 {
     public class Program
     {
-        public static MetricPusher PushGateway { get; private set; }
-
         public static void Main(string[] args)
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             string file;
+
             if (env == "Production")
                 file = "nlog.config";
             else

@@ -6,10 +6,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using com.b_velop.Slipways.Data.Contracts;
 using System.IO;
-using System.Text.Json;
 using System.Collections.Generic;
 using System.Security;
 using com.b_velop.Slipways.Data.Helper;
+using Newtonsoft.Json;
 
 namespace com.b_velop.Slipways.DataProvider.Services
 {
@@ -32,7 +32,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("BackUp service running");
-            _timer = new Timer(DoWork, cancellationToken, TimeSpan.FromMinutes(5), TimeSpan.FromHours(2));
+            _timer = new Timer(DoWork, cancellationToken, TimeSpan.FromMinutes(15), TimeSpan.FromHours(2));
             return Task.CompletedTask;
         }
 
@@ -45,10 +45,11 @@ namespace com.b_velop.Slipways.DataProvider.Services
             try
             {
                 var file = new FileInfo(fileName);
-                using var sw = file.CreateText();
-                using var str = sw.BaseStream;
-                await JsonSerializer.SerializeAsync(str, objects, new JsonSerializerOptions { IgnoreNullValues = true, WriteIndented = true }, cancellationToken);
-                sw.Close();
+                var o = JsonConvert.SerializeObject(objects, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented });
+                using var s = file.CreateText();
+                await s.WriteAsync(o);
+                await s.FlushAsync();
+                s.Close();
             }
             catch (ArgumentNullException e)
             {
@@ -80,7 +81,7 @@ namespace com.b_velop.Slipways.DataProvider.Services
             }
             catch (Exception e)
             {
-                _logger?.LogError(6666, $"Unexpected error occurred while back up '{type}' in file '{fileName}'", e);
+                _logger?.LogError(6666, $"Unexpected error occurred while back up '{type}' in file '{fileName}'\n{e.Message}\n{e.StackTrace}\n{e.InnerException}", e);
             }
         }
 

@@ -66,7 +66,6 @@ namespace com.b_velop.Slipways.DataProvider
                 endpoints.MapControllers();
                 endpoints.MapMetrics();
             });
-
             InitializeDatabase(logger, app);
         }
 
