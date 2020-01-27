@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="backUp\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Services\" />
     <Folder Include="Controllers\" />
